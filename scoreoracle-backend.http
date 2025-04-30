@@ -1,0 +1,6 @@
+@scoreoracle_backend_HostAddress = http://localhost:5249
+
+GET {{scoreoracle_backend_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

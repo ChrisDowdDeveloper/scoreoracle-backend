@@ -1,0 +1,3 @@
+﻿<Project>
+  <Import Project="..\build\scoreoracle-backend.props" />
+</Project>
