@@ -28,36 +28,42 @@ namespace scoreoracle_backend.Repositories
             }
             catch (PostgrestException ex)
             {
-                // print status and full content
                 Console.WriteLine($"Supabase HTTP {(int)ex.StatusCode} {ex.StatusCode}");
                 Console.WriteLine($"Response body: {ex.Response}");
                 throw;
             }
         }
 
-        public Task<User> DeleteUser(User user)
+        public async Task<User> DeleteUser(User user)
         {
-            throw new NotImplementedException();
+            var result = await _client.From<User>().Delete(user);
+            return result.Models.First();
         }
 
-        public Task<User?> GetUserByEmail(string email)
+        public async Task<User?> GetUserByEmail(string email)
         {
-            throw new NotImplementedException();
+            var result = await _client.From<User>().Filter("email", Supabase.Postgrest.Constants.Operator.Equals, email).Get();
+            return result.Models.FirstOrDefault();
         }
 
-        public Task<User?> GetUserById(Guid id)
+        public async Task<User?> GetUserById(Guid id)
         {
-            throw new NotImplementedException();
+            var result = await _client.From<User>()
+                .Filter("id", Supabase.Postgrest.Constants.Operator.Equals, id.ToString())
+                .Get();
+            return result.Models.FirstOrDefault();
         }
 
-        public Task<User?> GetUserByUsername(string username)
+        public async Task<User?> GetUserByUsername(string username)
         {
-            throw new NotImplementedException();
+            var result = await _client.From<User>().Filter("username", Supabase.Postgrest.Constants.Operator.Equals, username).Get();
+            return result.Models.FirstOrDefault();
         }
 
-        public Task<User> UpdateUser(User user)
+        public async Task<User> UpdateUser(User user)
         {
-            throw new NotImplementedException();
+            var result = await _client.From<User>().Update(user);
+            return result.Models.First();
         }
     }
 }

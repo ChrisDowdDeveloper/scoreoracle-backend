@@ -147,3 +147,4 @@ C:\Users\chris\CodingProjects\scoreoracle-backend\obj\Debug\net8.0\refint\scoreo
 C:\Users\chris\CodingProjects\scoreoracle-backend\obj\Debug\net8.0\scoreoracle-backend.pdb
 C:\Users\chris\CodingProjects\scoreoracle-backend\obj\Debug\net8.0\scoreoracle-backend.genruntimeconfig.cache
 C:\Users\chris\CodingProjects\scoreoracle-backend\obj\Debug\net8.0\ref\scoreoracle-backend.dll
+C:\Users\chris\CodingProjects\scoreoracle-backend\obj\Debug\net8.0\scoreoracle-backend.sourcelink.json

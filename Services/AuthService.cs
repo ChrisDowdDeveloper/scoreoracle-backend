@@ -26,10 +26,11 @@ namespace scoreoracle_backend.Services
             return response;
         }
 
-        public async Task<AuthResponseDto?> GetUserByEmail(string email)
+        public async Task<AuthResponseDto?> GetUserById(Guid id)
         {
-            var user = await _repo.GetUserByEmail(email);
+            var user = await _repo.GetUserById(id);
             return user is null ? null : AuthMapper.MapToDto(user);
         }
+
     }
 }

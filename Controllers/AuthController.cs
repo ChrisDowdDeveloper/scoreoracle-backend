@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using scoreoracle_backend.DTOs.User;
+using scoreoracle_backend.Mappers;
 using scoreoracle_backend.Services;
 
 namespace scoreoracle_backend.Controllers
@@ -27,10 +28,26 @@ namespace scoreoracle_backend.Controllers
 
             var handler = new JwtSecurityTokenHandler();
             var jwtToken = handler.ReadJwtToken(token);
-            var userId = Guid.Parse(jwtToken.Subject); // or .Claims["sub"]
+            var userId = Guid.Parse(jwtToken.Subject);
 
             var response = await _authService.CreateUser(dto, userId, token);
             return Ok(response);
+        }
+
+        [HttpPost("signin")]
+        public async Task<IActionResult> SignIn()
+        {
+            var token = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+
+            var handler = new JwtSecurityTokenHandler();
+            var jwtToken = handler.ReadJwtToken(token);
+            var userId = Guid.Parse(jwtToken.Subject);
+
+            var user = await _authService.GetUserById(userId);
+            if(user == null)
+                return NotFound();
+            
+            return Ok(user);
         }
     }
 }
