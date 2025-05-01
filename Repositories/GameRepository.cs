@@ -15,22 +15,38 @@ namespace scoreoracle_backend.Repositories
 
         public async Task<Game?> GetGameById(Guid id)
         {
-            return await _client.From<Game>().Where(g => g.Id == id).Single();
+            var result = await _client
+                .From<Game>()
+                .Filter("id", Supabase.Postgrest.Constants.Operator.Equals, id.ToString())
+                .Get();
+            return result.Models.FirstOrDefault();
         }
 
         public async Task<Team?> GetTeamById(Guid id)
         {
-            return await _client.From<Team>().Where(t => t.Id == id).Single();
+            var result = await _client
+                .From<Team>()
+                .Filter("id", Supabase.Postgrest.Constants.Operator.Equals, id.ToString())
+                .Get();
+            return result.Models.FirstOrDefault();
         }
 
         public async Task<Sport?> GetSportById(Guid id)
         {
-            return await _client.From<Sport>().Where(s => s.Id == id).Single();;
+            var result = await _client
+                .From<Sport>()
+                .Filter("id", Supabase.Postgrest.Constants.Operator.Equals, id.ToString())
+                .Get();
+            return result.Models.FirstOrDefault();
         }
 
         public async Task<League?> GetLeagueById(Guid id)
         {
-            return await _client.From<League>().Where(l => l.Id == id).Single();
+            var result = await _client
+                .From<League>()
+                .Filter("id", Supabase.Postgrest.Constants.Operator.Equals, id.ToString())
+                .Get();
+            return result.Models.FirstOrDefault();
         }
 
         public Task<List<Team?>> GetGamesByTeamId(Guid id)

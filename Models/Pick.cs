@@ -6,6 +6,7 @@ using Supabase.Postgrest.Attributes;
 
 namespace scoreoracle_backend.Models
 {
+    [Table("picks")]
     public class Pick
     {
         [PrimaryKey("id", false)]

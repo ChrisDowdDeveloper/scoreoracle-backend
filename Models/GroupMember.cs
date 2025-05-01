@@ -6,6 +6,7 @@ using Supabase.Postgrest.Attributes;
 
 namespace scoreoracle_backend.Models
 {
+    [Table("group_members")]
     public class GroupMember
     {
         [PrimaryKey("id", false)]

@@ -2,27 +2,18 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Supabase.Postgrest.Attributes;
-using Supabase.Postgrest.Models;
 
-namespace scoreoracle_backend.Models
+namespace scoreoracle_backend.DTOs.League
 {
-    [Table("leagues")]
-    public class League : BaseModel
+    public class LeagueResponseDto
     {
-        [PrimaryKey("id", false)]
         public Guid Id { get; set; }
 
-        [Column("sport_id")]
         public Guid SportId { get; set; }
+        public string SportName { get; set; }
 
-        [Column("name")]
         public string Name { get; set; }
-
-        [Column("logo_url")]
         public string LogoUrl { get; set; }
-
-        [Column("abbreviation")]
         public string Abbreviation { get; set; }
     }
 }

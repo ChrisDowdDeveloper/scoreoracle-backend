@@ -7,6 +7,7 @@ using Supabase.Postgrest.Models;
 
 namespace scoreoracle_backend.Models
 {
+    [Table("sports")]
     public class Sport : BaseModel
     {
         [PrimaryKey("id", false)]

@@ -44,9 +44,10 @@ namespace scoreoracle_backend.Controllers
             var userId = Guid.Parse(jwtToken.Subject);
 
             var user = await _authService.GetUserById(userId);
-            if(user == null)
+            if (user == null)
                 return NotFound();
-            
+
+            user.AccessToken = token;
             return Ok(user);
         }
     }
