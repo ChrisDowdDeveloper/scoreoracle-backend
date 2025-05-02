@@ -33,14 +33,14 @@ namespace scoreoracle_backend.Controllers
             return league is null ? NotFound() : Ok(league);
         }
 
-        [HttpGet("league/{name}")]
+        [HttpGet("name/{name}")]
         public async Task<IActionResult> GetLeagueByName(string name)
         {
             var league = await _leagueService.GetLeagueByName(name);
             return league is null ? NotFound() : Ok(league);
         }
 
-        [HttpGet("league/sport/{sportId}")]
+        [HttpGet("sport/{sportId}")]
         public async Task<IActionResult> GetLeaguesBySportId(Guid sportId)
         {
             var leagues = await _leagueService.GetLeaguesBySportId(sportId);
