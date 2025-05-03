@@ -53,6 +53,9 @@ builder.Services.AddScoped<SportService>();
 builder.Services.AddScoped<ILeagueRepository, LeagueRepository>();
 builder.Services.AddScoped<LeagueService>();
 
+builder.Services.AddScoped<ITeamRepository, TeamRepository>();
+builder.Services.AddScoped<TeamService>();
+
 builder.Services.AddScoped<IGameRepository, GameRepository>();
 builder.Services.AddScoped<GameService>();
 

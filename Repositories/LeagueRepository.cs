@@ -32,9 +32,6 @@ namespace scoreoracle_backend.Repositories
             return response.Models.First();
         }
 
-
-
-
         public async Task<List<League>> GetAllLeagues()
         {
             var result = await _client.From<League>().Get();

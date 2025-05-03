@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("scoreoracle-backend")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+9af94bb4860d0b30a91a58bf1ca9da78b88fb3c4")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+005e5458d4df218d1c0b98fc0801f36b0ddaca93")]
 [assembly: System.Reflection.AssemblyProductAttribute("scoreoracle-backend")]
 [assembly: System.Reflection.AssemblyTitleAttribute("scoreoracle-backend")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

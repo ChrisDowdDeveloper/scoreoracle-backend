@@ -16,6 +16,9 @@ namespace scoreoracle_backend.Models
         [Column("name")]
         public string Name { get; set; }
 
+        [Column("city_name")]
+        public string CityName { get; set; }
+
         [Column("sport_id")]
         public Guid SportId { get; set; }
 
