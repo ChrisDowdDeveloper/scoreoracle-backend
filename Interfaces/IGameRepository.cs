@@ -8,12 +8,21 @@ namespace scoreoracle_backend.Interfaces
 {
     public interface IGameRepository
     {
+        Task<List<Game>> GetAllGames();
+        Task<List<Game>> GetAllGamesByTeamId(Guid teamId);
+        Task<List<Game>> GetAllGamesBySportId(Guid sportId);
+        Task<List<Game>> GetAllGamesByLeagueId(Guid leagueId);
+        Task<List<Game>> GetAllGamesByLeagueIdAndDate(Guid leagueId, DateOnly date);
+        Task<List<Game>> GetGamesByDateRange(DateOnly startDate, DateOnly endDate);
+        Task<List<Game>> GetGamesByTeamIdAndDate(Guid teamId, DateOnly date);
+        Task<List<Game>> GetGamesByHomeTeam(Guid homeTeamId);
+        Task<List<Game>> GetGamesByAwayTeam(Guid awayTeamId);
+        Task<List<Game>> GetUpcomingGames();
+        Task<List<Game>> GetCompletedGames();
+        Task<List<Game>> GetGames(int pageNumber, int pageSize);
         Task<Game?> GetGameById(Guid id);
-        Task<Team?> GetTeamById(Guid id);
-        Task<Sport?> GetSportById(Guid id);
-        Task<League?> GetLeagueById(Guid id);
-        Task<List<Team?>> GetGamesByTeamId(Guid id);
-        Task<List<Sport?>> GetGamesBySportId(Guid id);
-        Task<List<League?>> GetGamesByLeagueId(Guid id);
+        Task<Game> CreateGame(Game game);
+        Task<Game> UpdateGame(Game game);
+        Task<Game> DeleteGame(Game game);
     }
 }

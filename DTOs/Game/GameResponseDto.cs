@@ -8,7 +8,11 @@ namespace scoreoracle_backend.DTOs.Game
     public class GameResponseDto
     {
         public Guid Id { get; set; }
+
+        public Guid SportId { get; set; }
         public string SportName { get; set; }
+        
+        public Guid LeagueId { get; set; }
         public string LeagueName { get; set; }
 
         public Guid HomeTeamId { get; set; }

@@ -32,7 +32,7 @@ namespace scoreoracle_backend.Models
         public bool IsCompleted { get; set; }
 
         [Column("winner_team_id")]
-        public Guid WinnerTeamId { get; set; }
+        public Guid? WinnerTeamId { get; set; }
 
         [Column("score_home")]
         public int ScoreHome { get; set; }

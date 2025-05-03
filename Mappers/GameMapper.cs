@@ -16,7 +16,9 @@ namespace scoreoracle_backend.Mappers
             return new GameResponseDto
             {
                 Id = game.Id,
+                SportId = game.SportId,
                 SportName = sport.Name,
+                LeagueId = game.Id,
                 LeagueName = league.Name,
                 HomeTeamId = home.Id,
                 HomeTeamName = home.Name,
@@ -44,7 +46,7 @@ namespace scoreoracle_backend.Mappers
                 AwayTeamId = dto.AwayTeamId,
                 GameDate = dto.GameDate,
                 IsCompleted = dto.IsCompleted,
-                WinnerTeamId = dto.WinnerTeamId ?? Guid.Empty,
+                WinnerTeamId = dto.WinnerTeamId,
                 ScoreHome = dto.ScoreHome ?? 0,
                 ScoreAway = dto.ScoreAway ?? 0
             };
@@ -52,8 +54,11 @@ namespace scoreoracle_backend.Mappers
 
         public static void MapToUpdatedModel(Game game, UpdateGameDto dto)
         {
-            game.GameDate = dto.GameDate;
-            game.IsCompleted = dto.IsCompleted;
+            if(dto.GameDate.HasValue)
+                game.GameDate = dto.GameDate.Value;
+
+            if(dto.IsCompleted.HasValue)
+                game.IsCompleted = dto.IsCompleted.Value;
 
             if (dto.WinnerTeamId.HasValue)
                 game.WinnerTeamId = dto.WinnerTeamId.Value;
