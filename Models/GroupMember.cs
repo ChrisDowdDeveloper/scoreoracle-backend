@@ -3,11 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Supabase.Postgrest.Attributes;
+using Supabase.Postgrest.Models;
 
 namespace scoreoracle_backend.Models
 {
     [Table("group_members")]
-    public class GroupMember
+    public class GroupMember : BaseModel
     {
         [PrimaryKey("id", false)]
         public Guid Id { get; set; }
