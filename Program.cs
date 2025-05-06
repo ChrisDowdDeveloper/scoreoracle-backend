@@ -59,6 +59,9 @@ builder.Services.AddScoped<TeamService>();
 builder.Services.AddScoped<IGameRepository, GameRepository>();
 builder.Services.AddScoped<GameService>();
 
+builder.Services.AddScoped<IGroupRepository, GroupRepository>();
+builder.Services.AddScoped<GroupService>();
+
 
 var app = builder.Build();
 
