@@ -8,7 +8,7 @@ namespace scoreoracle_backend.DTOs.GroupMember
     public class GroupMemberRequestDto
     {
         public Guid UserId { get; set; }
-        public GroupRole Role { get; set; }
+        public string Role { get; set; }
         public Guid GroupId { get; set; }
     }
 }

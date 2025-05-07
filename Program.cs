@@ -1,5 +1,8 @@
 
 
+using System.Text.Json.Serialization;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 using scoreoracle_backend.Interfaces;
 using scoreoracle_backend.Repositories;
 using scoreoracle_backend.Services;
@@ -38,7 +41,14 @@ builder.Services.AddSingleton(provider => {
 });
 
 
-builder.Services.AddControllers();
+builder.Services
+  .AddControllers()
+  .AddJsonOptions(opts =>
+  {
+      // ← this makes ASP.NET accept both "Member"/"Admin" *and* 0/1 for GroupRole
+      opts.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+      opts.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
+  });
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -61,6 +71,9 @@ builder.Services.AddScoped<GameService>();
 
 builder.Services.AddScoped<IGroupRepository, GroupRepository>();
 builder.Services.AddScoped<GroupService>();
+
+builder.Services.AddScoped<IGroupMemberRepository, GroupMemberRepository>();
+builder.Services.AddScoped<GroupMemberService>();
 
 
 var app = builder.Build();

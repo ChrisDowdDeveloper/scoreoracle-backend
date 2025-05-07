@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using scoreoracle_backend.DTOs.GroupMember;
+using scoreoracle_backend.Interfaces;
 using scoreoracle_backend.Mappers;
 using scoreoracle_backend.Models;
 using scoreoracle_backend.Repositories;
@@ -12,11 +13,11 @@ namespace scoreoracle_backend.Services
     public class GroupMemberService
     {
 
-        private readonly GroupMemberRepository _repo;
-        private readonly UserRepository _userRepo;
-        private readonly GroupRepository _groupRepo;
+        private readonly IGroupMemberRepository _repo;
+        private readonly IUserRepository _userRepo;
+        private readonly IGroupRepository _groupRepo;
 
-        public GroupMemberService(GroupMemberRepository repo, UserRepository userRepo, GroupRepository groupRepo)
+        public GroupMemberService(IGroupMemberRepository repo, IUserRepository userRepo, IGroupRepository groupRepo)
         {
             _repo = repo;
             _userRepo = userRepo;

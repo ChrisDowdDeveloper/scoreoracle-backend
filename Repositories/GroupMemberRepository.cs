@@ -27,7 +27,12 @@ namespace scoreoracle_backend.Repositories
 
         public async Task<List<GroupMember>> GetAdminsByGroupId(Guid groupId)
         {
-            var response = await _client.From<GroupMember>().Where(m => m.Role == GroupRole.Admin).Get();
+            var response = await _client
+                .From<GroupMember>()
+                .Filter("group_id", Operator.Equals, groupId.ToString())
+                .Where(m => m.Role == "ADMIN")
+                .Get();
+
             return response.Models;
         }
 
@@ -63,7 +68,7 @@ namespace scoreoracle_backend.Repositories
                 .Get();
             
             var member = response.Models.FirstOrDefault();
-            return member != null && member.Role == GroupRole.Admin;
+            return member != null && member.Role == "ADMIN";
         }
 
         public async Task<bool> IsUserInGroup(Guid userId, Guid groupId)

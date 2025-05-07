@@ -27,7 +27,7 @@ namespace scoreoracle_backend.Mappers
             return new GroupMember
             {
                 UserId = dto.UserId,
-                Role = dto.Role,
+                Role = dto.Role.ToUpper(),
                 GroupId = dto.GroupId
             };
         }

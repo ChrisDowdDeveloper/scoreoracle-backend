@@ -1,7 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
+using Newtonsoft.Json.Converters;
 using Supabase.Postgrest.Attributes;
 using Supabase.Postgrest.Models;
 
@@ -17,15 +20,9 @@ namespace scoreoracle_backend.Models
         public Guid UserId { get; set; }
 
         [Column("role")]
-        public GroupRole Role { get; set; }
+        public string Role { get; set; }
 
         [Column("group_id")]
         public Guid GroupId { get; set; }
     }
-}
-
-public enum GroupRole
-{
-    Member,
-    Admin
 }
