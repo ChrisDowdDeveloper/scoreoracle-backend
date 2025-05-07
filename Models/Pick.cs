@@ -3,11 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Supabase.Postgrest.Attributes;
+using Supabase.Postgrest.Models;
 
 namespace scoreoracle_backend.Models
 {
     [Table("picks")]
-    public class Pick
+    public class Pick : BaseModel
     {
         [PrimaryKey("id", false)]
         public Guid Id { get; set; }
@@ -25,7 +26,7 @@ namespace scoreoracle_backend.Models
         public Guid PredictedWinnerId { get; set; }
 
         [Column("is_correct")]
-        public bool IsCorrect { get; set; }
+        public bool? IsCorrect { get; set; }
 
         [Column("created_at")]
         public DateTime CreatedAt { get; set; }
