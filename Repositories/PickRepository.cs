@@ -52,7 +52,7 @@ namespace scoreoracle_backend.Repositories
         public async Task<List<Pick>> GetPicksByGroupId(Guid groupId)
         {
             var response = await _client.From<Pick>()
-                .Filter("game_id", Operator.Equals, groupId.ToString())
+                .Filter("group_id", Operator.Equals, groupId.ToString())
                 .Get();
             return response.Models;
         }

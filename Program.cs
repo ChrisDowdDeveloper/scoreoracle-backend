@@ -75,6 +75,8 @@ builder.Services.AddScoped<GroupService>();
 builder.Services.AddScoped<IGroupMemberRepository, GroupMemberRepository>();
 builder.Services.AddScoped<GroupMemberService>();
 
+builder.Services.AddScoped<IPickRepository, PickRepository>();
+builder.Services.AddScoped<PickService>();
 
 var app = builder.Build();
 
