@@ -14,6 +14,9 @@ namespace scoreoracle_backend.DTOs.Group
 
         public Guid CreatedByUserId { get; set; }
         public string CreatedByUserName { get; set; }
+
+        public Guid LeagueId { get; set; }
+        public string LeagueName { get; set; }
         
         public DateTime CreatedAt { get; set; }
     }

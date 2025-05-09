@@ -11,7 +11,7 @@ namespace scoreoracle_backend.Mappers
 {
     public class GroupMapper
     {
-        public static GroupResponseDto MapToDto(Group group, User user)
+        public static GroupResponseDto MapToDto(Group group, User user, League league)
         {
             return new GroupResponseDto
             {
@@ -21,6 +21,8 @@ namespace scoreoracle_backend.Mappers
                 IsPublic = group.IsPublic,
                 CreatedByUserId = group.CreatedByUserId,
                 CreatedByUserName = user.Username,
+                LeagueId = group.LeagueId,
+                LeagueName = league.Name,
                 CreatedAt = group.CreatedAt
             };
         }
@@ -33,6 +35,7 @@ namespace scoreoracle_backend.Mappers
                 Description = dto.Description ?? "",
                 IsPublic = dto.IsPublic,
                 CreatedByUserId = dto.CreatedByUserId,
+                LeagueId = dto.LeagueId,
                 CreatedAt = DateTime.UtcNow
             };
         }

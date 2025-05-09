@@ -11,5 +11,6 @@ namespace scoreoracle_backend.DTOs.Group
         public string? Description { get; set; }
         public bool IsPublic { get; set; }
         public Guid CreatedByUserId { get; set; }
+        public Guid LeagueId { get; set; }
     }
 }

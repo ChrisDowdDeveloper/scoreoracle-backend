@@ -25,6 +25,9 @@ namespace scoreoracle_backend.Models
         [Column("created_by_user_id")]
         public Guid CreatedByUserId { get; set; }
 
+        [Column("league_id")]
+        public Guid LeagueId { get; set; }
+
         [Column("created_at")]
         public DateTime CreatedAt { get; set; }
 

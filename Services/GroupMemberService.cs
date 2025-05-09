@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using scoreoracle_backend.DTOs.GroupMember;
 using scoreoracle_backend.Interfaces;
@@ -29,10 +30,7 @@ namespace scoreoracle_backend.Services
             var member = GroupMemberMapper.MapToModel(dto);
             var createdMember = await _repo.AddMember(member);
 
-            var user = await _userRepo.GetUserById(dto.UserId);
-            var group = await _groupRepo.GetGroupById(dto.GroupId);
-
-            return GroupMemberMapper.MapToDto(createdMember, user!, group!);
+            return await MapGroupMemberToResponseDto(createdMember);
         }
 
         public async Task<GroupMemberResponseDto?> GetGroupMemberById(Guid id)
@@ -40,10 +38,7 @@ namespace scoreoracle_backend.Services
             var member = await _repo.GetGroupMemberById(id);
             if(member == null) return null;
 
-            var user = await _userRepo.GetUserById(member.UserId);
-            var group = await _groupRepo.GetGroupById(member.GroupId);
-
-            return GroupMemberMapper.MapToDto(member, user!, group!);
+            return await MapGroupMemberToResponseDto(member);
         }
 
         public async Task<GroupMemberResponseDto?> GetGroupMember(Guid userId, Guid groupId)
@@ -51,42 +46,19 @@ namespace scoreoracle_backend.Services
             var member = await _repo.GetGroupMember(userId, groupId);
             if(member == null) return null;
 
-            var user = await _userRepo.GetUserById(member.UserId);
-            var group = await _groupRepo.GetGroupById(member.GroupId);
-
-            return GroupMemberMapper.MapToDto(member, user!, group!);
+            return await MapGroupMemberToResponseDto(member);
         }
 
         public async Task<List<GroupMemberResponseDto>> GetMembersByGroupId(Guid groupId)
         {
             var members = await _repo.GetMembersByGroupId(groupId);
-            var results = new List<GroupMemberResponseDto>();
-
-            foreach(var member in members)
-            {
-                var user = await _userRepo.GetUserById(member.UserId);
-                var group = await _groupRepo.GetGroupById(member.GroupId);
-
-                results.Add(GroupMemberMapper.MapToDto(member, user!, group!));
-            }
-
-            return results;
+            return await MapGroupMemberList(members);
         }
 
         public async Task<List<GroupMemberResponseDto>> GetAdminsByGroupId(Guid groupId)
         {
             var members = await _repo.GetAdminsByGroupId(groupId);
-            var results = new List<GroupMemberResponseDto>();
-
-            foreach(var member in members)
-            {
-                var user = await _userRepo.GetUserById(member.UserId);
-                var group = await _groupRepo.GetGroupById(member.GroupId);
-
-                results.Add(GroupMemberMapper.MapToDto(member, user!, group!));
-            }
-
-            return results;
+            return await MapGroupMemberList(members);
         }
 
         public async Task<GroupMemberResponseDto?> UpdateGroupMember(Guid id, UpdateGroupMemberDto dto)
@@ -98,10 +70,7 @@ namespace scoreoracle_backend.Services
 
             var updated = await _repo.UpdateGroupMember(member);
 
-            var user = await _userRepo.GetUserById(member.UserId);
-            var group = await _groupRepo.GetGroupById(member.GroupId);
-
-            return GroupMemberMapper.MapToDto(updated, user!, group!);
+            return await MapGroupMemberToResponseDto(updated);
         }
 
         public async Task<bool> RemoveMember(Guid id)
@@ -126,6 +95,24 @@ namespace scoreoracle_backend.Services
         public async Task<bool> IsUserGroupAdmin(Guid userId, Guid groupId)
         {
             return await _repo.IsUserGroupAdmin(userId, groupId);
+        }
+
+        private async Task<GroupMemberResponseDto> MapGroupMemberToResponseDto(GroupMember member)
+        {
+            var user = await _userRepo.GetUserById(member.UserId);
+            var group = await _groupRepo.GetGroupById(member.GroupId);
+
+            return GroupMemberMapper.MapToDto(member, user!, group!);
+        }
+
+        private async Task<List<GroupMemberResponseDto>> MapGroupMemberList(List<GroupMember> members)
+        {
+            var list = new List<GroupMemberResponseDto>();
+            foreach(var member in members)
+            {
+                list.Add(await MapGroupMemberToResponseDto(member));
+            }
+            return list;
         }
 
     }

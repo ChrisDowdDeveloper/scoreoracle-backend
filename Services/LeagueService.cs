@@ -12,9 +12,11 @@ namespace scoreoracle_backend.Services
     public class LeagueService
     {
         private readonly ILeagueRepository _repo;
-        public LeagueService(ILeagueRepository repo)
+        private readonly ISportRepository _sportRepo;
+        public LeagueService(ILeagueRepository repo, ISportRepository sportRepo)
         {
             _repo = repo;
+            _sportRepo = sportRepo;
         }
 
         public async Task<LeagueResponseDto?> GetLeagueById(Guid id)
@@ -22,52 +24,34 @@ namespace scoreoracle_backend.Services
             var league = await _repo.GetLeagueById(id);
             if(league == null) return null;
 
-            var sport = await _repo.GetSportById(league.SportId);
-
-            return LeagueMapper.MapToDto(league, sport!);
+            return await MapLeagueToResponseDto(league);
         }
 
         public async Task<LeagueResponseDto?> GetLeagueByName(string name)
         {
             var league = await _repo.GetLeagueByName(name);
-            if (league is null)
-                return null;
+            if(league == null) return null;
 
-            var sport = await _repo.GetSportById(league.SportId);
-
-            return LeagueMapper.MapToDto(league, sport!);
+            return await MapLeagueToResponseDto(league);
         }
 
         public async Task<List<LeagueResponseDto>> GetAllLeagues()
         {
             var leagues = await _repo.GetAllLeagues();
-            var results = new List<LeagueResponseDto>();
-
-            foreach(var league in leagues)
-            {
-                var sport = await _repo.GetSportById(league.SportId);
-                results.Add(LeagueMapper.MapToDto(league, sport!));
-            }
-
-            return results;
+            return await MapLeagueList(leagues);
         }
 
         public async Task<List<LeagueResponseDto>> GetLeaguesBySportId(Guid sportId)
         {
             var leagues = await _repo.GetLeaguesBySportId(sportId);
-            var sport = await _repo.GetSportById(sportId);
-            
-            if (sport == null) return new List<LeagueResponseDto>();
-
-            return leagues.Select(league => LeagueMapper.MapToDto(league, sport)).ToList();
+            return await MapLeagueList(leagues);
         }
 
         public async Task<LeagueResponseDto> CreateLeague(LeagueRequestDto dto)
         {
             var league = LeagueMapper.MapToModel(dto);
             var createdLeague = await _repo.CreateLeague(league);
-            var sport = await _repo.GetSportById(createdLeague.SportId);
-            return LeagueMapper.MapToDto(createdLeague, sport!);
+            return await MapLeagueToResponseDto(createdLeague);
         }
 
         public async Task<LeagueResponseDto?> UpdateLeague(Guid id, UpdateLeagueDto dto)
@@ -78,8 +62,7 @@ namespace scoreoracle_backend.Services
             LeagueMapper.MapToUpdatedModel(league, dto);
 
             var updated = await _repo.UpdateLeague(league);
-            var sport = await _repo.GetSportById(updated.SportId);
-            return LeagueMapper.MapToDto(updated, sport!);
+            return await MapLeagueToResponseDto(updated);
         }
 
         public async Task<bool> DeleteLeague(Guid id)
@@ -88,6 +71,23 @@ namespace scoreoracle_backend.Services
             if (league == null) return false;
             await _repo.DeleteLeague(league);
             return true;
+        }
+
+        private async Task<LeagueResponseDto> MapLeagueToResponseDto(League league)
+        {
+            var sport = await _sportRepo.GetSportById(league.SportId);
+
+            return LeagueMapper.MapToDto(league, sport!);
+        }
+
+        private async Task<List<LeagueResponseDto>> MapLeagueList(List<League> leagues)
+        {
+            var list = new List<LeagueResponseDto>();
+            foreach(var league in leagues)
+            {
+                list.Add(await MapLeagueToResponseDto(league));
+            }
+            return list;
         }
     }
 }
