@@ -104,6 +104,12 @@ namespace scoreoracle_backend.Services
 
         public async Task<GameResponseDto> CreateGame(GameRequestDto dto)
         {
+            var homeTeam = await _teamRepo.GetTeamById(dto.HomeTeamId);
+            var awayTeam = await _teamRepo.GetTeamById(dto.AwayTeamId);
+
+            if(homeTeam.LeagueId != awayTeam.LeagueId)
+                throw new InvalidOperationException("Home and away teams must be in the same league.");
+                
             var game = GameMapper.MapToModel(dto);
             var createdGame = await _repo.CreateGame(game);
 

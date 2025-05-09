@@ -15,10 +15,21 @@ namespace scoreoracle_backend.Controllers
             _pickService = pickService;
         }
 
+        private Guid GetCurrentUserId()
+        {
+            var claim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier);
+            if(claim == null || !Guid.TryParse(claim.Value, out var userId))
+                throw new UnauthorizedAccessException("Invalid or missing user ID in token");
+            
+            return userId;
+        }
+
         [HttpPost]
         public async Task<IActionResult> CreatePick([FromBody] PickRequestDto dto)
         {
-            var created = await _pickService.CreatePick(dto);
+            var currentUserId = GetCurrentUserId();
+
+            var created = await _pickService.CreatePick(dto, currentUserId);
             return CreatedAtAction(nameof(GetPickById), new { id = created.Id }, created);
         }
 
@@ -60,14 +71,16 @@ namespace scoreoracle_backend.Controllers
         [HttpPatch("{id}")]
         public async Task<IActionResult> UpdatePick(Guid id, [FromBody] UpdatePickDto dto)
         {
-            var updated = await _pickService.UpdatePick(id, dto);
+            var currentUserId = GetCurrentUserId();
+            var updated = await _pickService.UpdatePick(id, dto, currentUserId);
             return updated is null ? NotFound() : Ok(updated);
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeletePick(Guid id)
         {
-            var success = await _pickService.DeletePick(id);
+            var currentUserId = GetCurrentUserId();
+            var success = await _pickService.DeletePick(id, currentUserId);
             return success ? NoContent() : NotFound();
         }
     }

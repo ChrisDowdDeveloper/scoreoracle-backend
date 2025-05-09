@@ -10,27 +10,39 @@ public class PickService
     private readonly IGroupRepository _groupRepo;
     private readonly IGameRepository _gameRepo;
     private readonly ITeamRepository _teamRepo;
+    private readonly IGroupMemberRepository _groupMemberRepo;
 
-    public PickService(IPickRepository repo, IUserRepository userRepo, IGroupRepository groupRepo, IGameRepository gameRepo, ITeamRepository teamRepo)
+    public PickService(IPickRepository repo, IUserRepository userRepo, IGroupRepository groupRepo, IGameRepository gameRepo, ITeamRepository teamRepo, IGroupMemberRepository groupMemberRepo)
     {
         _repo = repo;
         _userRepo = userRepo;
         _groupRepo = groupRepo;
         _gameRepo = gameRepo;
         _teamRepo = teamRepo;
+        _groupMemberRepo = groupMemberRepo;
     }
 
-    public async Task<PickResponseDto> CreatePick(PickRequestDto dto)
+    public async Task<PickResponseDto> CreatePick(PickRequestDto dto, Guid currentUserId)
     {
-        var pick = new Pick
-        {
-            Id = Guid.NewGuid(),
-            UserId = dto.UserId,
-            GroupId = dto.GroupId,
-            GameId = dto.GameId,
-            PredictedWinnerId = dto.PredictedWinnerId,
-            CreatedAt = DateTime.UtcNow
-        };
+        var isMember = await _groupMemberRepo.IsUserInGroup(dto.UserId, dto.GroupId);
+        if(!isMember)
+            throw new UnauthorizedAccessException("User is not a member of this group");
+        
+        var existingPick = await _repo.GetPickByUserAndGame(dto.UserId, dto.GameId);
+        if(existingPick != null)
+            throw new InvalidOperationException("A pick already exists for this game and user.");
+
+        var group = await _groupRepo.GetGroupById(dto.GroupId);
+        var game = await _gameRepo.GetGameById(dto.GameId);
+        if(group.LeagueId != game.LeagueId)
+            throw new InvalidOperationException("This game in not part of the group's league");
+
+        if (dto.PredictedWinnerId != game.HomeTeamId && dto.PredictedWinnerId != game.AwayTeamId)
+            throw new InvalidOperationException("Predicted team must be one of the teams playing in the game.");
+
+        var pick = PickMapper.MapToModel(dto);
+        if (pick.UserId != currentUserId)
+            throw new UnauthorizedAccessException("You are not allowed to create this pick.");
 
         var created = await _repo.CreatePick(pick);
         return await MapPickToResponseDto(created);
@@ -75,25 +87,46 @@ public class PickService
         return await MapPickList(picks);
     }
 
-    public async Task<PickResponseDto?> UpdatePick(Guid id, UpdatePickDto dto)
+    public async Task<PickResponseDto?> UpdatePick(Guid id, UpdatePickDto dto, Guid currentUserId)
     {
         var pick = await _repo.GetPickById(id);
         if (pick == null) return null;
 
-        pick.PredictedWinnerId = dto.PredictedWinnerId;
+        if (pick.UserId != currentUserId)
+            throw new UnauthorizedAccessException("You are not allowed to update this pick.");
 
+        var game = await _gameRepo.GetGameById(pick.GameId);
+        if (game == null) throw new InvalidOperationException("Game not found.");
+
+        if (dto.PredictedWinnerId != game.HomeTeamId && dto.PredictedWinnerId != game.AwayTeamId)
+            throw new InvalidOperationException("Predicted team must be one of the teams playing in the game.");
+
+        pick.PredictedWinnerId = dto.PredictedWinnerId;
         var updated = await _repo.UpdatePick(pick);
+
+        var isMember = await _groupMemberRepo.IsUserInGroup(updated.UserId, pick.GroupId);
+        if (!isMember)
+            throw new UnauthorizedAccessException("User is not authorized to modify this pick.");
+
         return await MapPickToResponseDto(updated);
     }
 
-    public async Task<bool> DeletePick(Guid id)
+    public async Task<bool> DeletePick(Guid id, Guid currentUserId)
     {
         var pick = await _repo.GetPickById(id);
         if (pick == null) return false;
+        if (pick.UserId != currentUserId)
+            throw new UnauthorizedAccessException("You are not allowed to delete this pick.");
+
+        var isMember = await _groupMemberRepo.IsUserInGroup(pick.UserId, pick.GroupId);
+        if (!isMember)
+            throw new UnauthorizedAccessException("User is not authorized to modify this pick.");
 
         await _repo.DeletePick(pick);
         return true;
     }
+
+    
 
     private async Task<PickResponseDto> MapPickToResponseDto(Pick pick)
     {
