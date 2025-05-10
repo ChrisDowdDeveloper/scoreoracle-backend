@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using scoreoracle_backend.DTOs.Group;
 using scoreoracle_backend.Services;
@@ -19,6 +20,15 @@ namespace scoreoracle_backend.Controllers
             _groupService = groupService;
         }
 
+        private Guid GetCurrentUserId()
+        {
+            var claim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier);
+            if(claim == null || !Guid.TryParse(claim.Value, out var userId))
+                throw new UnauthorizedAccessException("Invalid or missing user ID in token");
+            
+            return userId;
+        }
+
         [HttpGet]
         public async Task<IActionResult> GetAllGroups([FromQuery] int pageNumber, [FromQuery] int pageSize)
         {
@@ -26,6 +36,7 @@ namespace scoreoracle_backend.Controllers
             return Ok(groups);
         }
 
+        [Authorize]
         [HttpGet("{id}")]
         public async Task<IActionResult> GetGroupById(Guid id)
         {
@@ -40,6 +51,7 @@ namespace scoreoracle_backend.Controllers
             return Ok(groups);
         }
 
+        [Authorize]
         [HttpGet("user/{userId}")]
         public async Task<IActionResult> GetGroupsCreatedByUser(Guid userId)
         {
@@ -54,6 +66,7 @@ namespace scoreoracle_backend.Controllers
             return Ok(group);
         }
 
+        [Authorize]
         [HttpPost]
         public async Task<IActionResult> CreateGroup([FromBody] GroupRequestDto dto)
         {
@@ -61,17 +74,21 @@ namespace scoreoracle_backend.Controllers
             return CreatedAtAction(nameof(GetGroupById), new { id = created.Id }, created);
         }
 
+        [Authorize]
         [HttpPatch("{id}")]
         public async Task<IActionResult> UpdateGroup(Guid id, [FromBody] UpdateGroupDto dto)
         {
-            var updated = await _groupService.UpdateGroup(id, dto);
+            var userId = GetCurrentUserId();
+            var updated = await _groupService.UpdateGroup(id, dto, userId);
             return updated is null ? NotFound() : Ok(updated);
         }
 
+        [Authorize]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteGroup(Guid id)
         {
-            var deleted = await _groupService.DeleteGroup(id);
+            var userId = GetCurrentUserId();
+            var deleted = await _groupService.DeleteGroup(id, userId);
             return deleted ? NoContent() : NotFound();
         }
     }

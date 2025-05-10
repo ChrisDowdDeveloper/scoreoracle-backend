@@ -25,8 +25,13 @@ namespace scoreoracle_backend.Services
             _groupRepo = groupRepo;
         }
 
-        public async Task<GroupMemberResponseDto> AddMember(GroupMemberRequestDto dto)
+        public async Task<GroupMemberResponseDto> AddMember(GroupMemberRequestDto dto, Guid userId)
         {
+            var group = await _groupRepo.GetGroupById(dto.GroupId);
+            if(group == null) throw new InvalidOperationException("Group does not exist");
+            if(userId != group.CreatedByUserId)
+                throw new UnauthorizedAccessException("Cannot add group member");
+
             var member = GroupMemberMapper.MapToModel(dto);
             var createdMember = await _repo.AddMember(member);
 
@@ -61,29 +66,42 @@ namespace scoreoracle_backend.Services
             return await MapGroupMemberList(members);
         }
 
-        public async Task<GroupMemberResponseDto?> UpdateGroupMember(Guid id, UpdateGroupMemberDto dto)
+        public async Task<GroupMemberResponseDto?> UpdateGroupMember(Guid id, UpdateGroupMemberDto dto, Guid userId)
         {
             var member = await _repo.GetGroupMemberById(id);
-            if(member == null) return null;
+            if (member == null) return null;
+
+            var group = await _groupRepo.GetGroupById(member.GroupId);
+            if (group == null) return null;
+
+            if (userId != group.CreatedByUserId)
+                throw new UnauthorizedAccessException("Cannot update group member");
 
             GroupMemberMapper.MapToUpdatedModel(member, dto);
-
             var updated = await _repo.UpdateGroupMember(member);
 
             return await MapGroupMemberToResponseDto(updated);
+
         }
 
-        public async Task<bool> RemoveMember(Guid id)
+        public async Task<bool> RemoveMember(Guid id, Guid userId)
         {
             var member = await _repo.GetGroupMemberById(id);
             if(member == null) return false;
+
+            var group = await _groupRepo.GetGroupById(member.GroupId);
+            if(userId != member.UserId || userId != group.CreatedByUserId)
+                throw new UnauthorizedAccessException("Cannot remove group member");
 
             await _repo.RemoveMember(member);
             return true;
         }
 
-        public async Task<bool> RemoveMemberByUserAndGroup(Guid userId, Guid groupId)
+        public async Task<bool> RemoveMemberByUserAndGroup(Guid userId, Guid groupId, Guid currentUserId)
         {
+            var group = await _groupRepo.GetGroupById(groupId);
+            if(currentUserId != userId && currentUserId != group.CreatedByUserId)
+                throw new UnauthorizedAccessException("Cannot remove group member");
             return await _repo.RemoveMemberByUserAndGroup(userId, groupId);
         }
 

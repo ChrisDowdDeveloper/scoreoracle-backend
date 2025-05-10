@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using scoreoracle_backend.DTOs.Pick;
 using scoreoracle_backend.Services;
@@ -24,6 +25,7 @@ namespace scoreoracle_backend.Controllers
             return userId;
         }
 
+        [Authorize]
         [HttpPost]
         public async Task<IActionResult> CreatePick([FromBody] PickRequestDto dto)
         {
@@ -33,6 +35,7 @@ namespace scoreoracle_backend.Controllers
             return CreatedAtAction(nameof(GetPickById), new { id = created.Id }, created);
         }
 
+        [Authorize]
         [HttpGet]
         public async Task<IActionResult> GetAllPicks()
         {
@@ -40,6 +43,7 @@ namespace scoreoracle_backend.Controllers
             return Ok(picks);
         }
 
+        [Authorize]
         [HttpGet("{id}")]
         public async Task<IActionResult> GetPickById(Guid id)
         {
@@ -47,6 +51,7 @@ namespace scoreoracle_backend.Controllers
             return pick is null ? NotFound() : Ok(pick);
         }
 
+        [Authorize]
         [HttpGet("user/{userId}")]
         public async Task<IActionResult> GetPicksByUserId(Guid userId)
         {
@@ -54,6 +59,7 @@ namespace scoreoracle_backend.Controllers
             return Ok(picks);
         }
 
+        [Authorize]
         [HttpGet("group/{groupId}")]
         public async Task<IActionResult> GetPicksByGroupId(Guid groupId)
         {
@@ -61,6 +67,7 @@ namespace scoreoracle_backend.Controllers
             return Ok(picks);
         }
 
+        [Authorize]
         [HttpGet("user/{userId}/group/{groupId}")]
         public async Task<IActionResult> GetPicksByUserAndGroup(Guid userId, Guid groupId)
         {
@@ -68,6 +75,7 @@ namespace scoreoracle_backend.Controllers
             return Ok(picks);
         }
 
+        [Authorize]
         [HttpPatch("{id}")]
         public async Task<IActionResult> UpdatePick(Guid id, [FromBody] UpdatePickDto dto)
         {
@@ -76,6 +84,7 @@ namespace scoreoracle_backend.Controllers
             return updated is null ? NotFound() : Ok(updated);
         }
 
+        [Authorize]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeletePick(Guid id)
         {

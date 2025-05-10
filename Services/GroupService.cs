@@ -62,10 +62,13 @@ namespace scoreoracle_backend.Services
             return await MapGroupToResponseDto(createdGroup);
         }
 
-        public async Task<GroupResponseDto?> UpdateGroup(Guid id, UpdateGroupDto dto)
+        public async Task<GroupResponseDto?> UpdateGroup(Guid id, UpdateGroupDto dto, Guid userId)
         {
             var group = await _repo.GetGroupById(id);
             if(group == null) return null;
+
+            if(userId != group.CreatedByUserId)
+                throw new UnauthorizedAccessException("Cannot update the group.");
 
             GroupMapper.MapToUpdatedModel(group, dto);
 
@@ -74,10 +77,13 @@ namespace scoreoracle_backend.Services
             return await MapGroupToResponseDto(updated);
         }
 
-        public async Task<bool> DeleteGroup(Guid id)
+        public async Task<bool> DeleteGroup(Guid id, Guid userId)
         {
             var group = await _repo.GetGroupById(id);
             if(group == null) return false;
+
+            if(userId != group.CreatedByUserId)
+                throw new UnauthorizedAccessException("Cannot update the group.");
 
             await _repo.DeleteGroup(group);
             return true;

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using scoreoracle_backend.DTOs.Team;
 using scoreoracle_backend.Services;
@@ -61,6 +62,7 @@ namespace scoreoracle_backend.Controllers
             return Ok(teams);
         }
 
+        [Authorize]
         [HttpPost]
         public async Task<IActionResult> CreateTeam([FromBody] TeamRequestDto dto)
         {
@@ -68,6 +70,7 @@ namespace scoreoracle_backend.Controllers
             return CreatedAtAction(nameof(GetTeamById), new { id = created.Id }, created);
         }
 
+        [Authorize]
         [HttpPatch("{id}")]
         public async Task<IActionResult> UpdateTeam(Guid id, [FromBody] UpdateTeamDto dto)
         {
@@ -75,6 +78,7 @@ namespace scoreoracle_backend.Controllers
             return updated is null ? NotFound() : Ok(updated);
         }
 
+        [Authorize]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteTeam(Guid id)
         {
