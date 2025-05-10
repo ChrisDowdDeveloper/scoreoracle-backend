@@ -12,6 +12,7 @@ namespace scoreoracle_backend.Interfaces
         Task<Pick?> GetPickById(Guid id);
         Task<List<Pick>> GetPicksByUserId(Guid userId);
         Task<List<Pick>> GetPicksByGroupId(Guid groupId);
+        Task<List<Pick>> GetPicksByGameId(Guid gameId);
         Task<List<Pick>> GetPicksByUserAndGroup(Guid userId, Guid groupId);
         Task<Pick?> GetPickByUserAndGame(Guid userId, Guid gameId);
         Task<Pick> UpdatePick(Pick pick);

@@ -74,6 +74,22 @@ namespace scoreoracle_backend.Controllers
             var picks = await _pickService.GetPicksByUserAndGroup(userId, groupId);
             return Ok(picks);
         }
+        
+        [Authorize]
+        [HttpGet("game/{gameId}")]
+        public async Task<IActionResult> GetPicksByGameId(Guid gameId)
+        {
+            var picks = await _pickService.GetPicksByGameId(gameId);
+            return Ok(picks);
+        }
+
+        [Authorize]
+        [HttpGet("group/{groupId}/leaderboard")]
+        public async Task<IActionResult> GetGroupLeaderboard(Guid groupId)
+        {
+            var leaderboard = await _pickService.GetGroupLeaderboard(groupId);
+            return Ok(leaderboard);
+        }
 
         [Authorize]
         [HttpPatch("{id}")]

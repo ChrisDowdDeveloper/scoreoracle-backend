@@ -15,11 +15,13 @@ namespace scoreoracle_backend.Services
         private readonly IUserRepository _userRepo;
         private readonly IGroupRepository _repo;
         private readonly ILeagueRepository _leagueRepo;
-        public GroupService(IGroupRepository repo, IUserRepository userRepo, ILeagueRepository leagueRepo)
+        private readonly IGroupMemberRepository _groupMemberRepo;
+        public GroupService(IGroupRepository repo, IUserRepository userRepo, ILeagueRepository leagueRepo, IGroupMemberRepository groupMemberRepository)
         {
             _repo = repo;
             _userRepo = userRepo;
             _leagueRepo = leagueRepo;
+            _groupMemberRepo = groupMemberRepository;
         }
 
         public async Task<GroupResponseDto?> GetGroupById(Guid id)
@@ -58,6 +60,16 @@ namespace scoreoracle_backend.Services
         {
             var group = GroupMapper.MapToModel(dto);
             var createdGroup = await _repo.CreateGroup(group);
+
+            var adminMember = new GroupMember
+            {
+                Id = Guid.NewGuid(),
+                UserId = dto.CreatedByUserId,
+                GroupId = createdGroup.Id,
+                Role = "ADMIN"
+            };
+
+            await _groupMemberRepo.AddMember(adminMember);
 
             return await MapGroupToResponseDto(createdGroup);
         }

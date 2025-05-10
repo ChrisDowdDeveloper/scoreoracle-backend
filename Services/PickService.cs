@@ -1,3 +1,4 @@
+using scoreoracle_backend.DTOs.Leaderboard;
 using scoreoracle_backend.DTOs.Pick;
 using scoreoracle_backend.Interfaces;
 using scoreoracle_backend.Mappers;
@@ -126,7 +127,51 @@ public class PickService
         return true;
     }
 
-    
+    public async Task<int> GetUserScoreInGroup(Guid userId, Guid groupId)
+    {
+        var picks = await _repo.GetPicksByUserAndGroup(userId, groupId);
+        return picks.Count(p => p.IsCorrect == true);
+    }
+
+    public async Task<List<PickResponseDto>> GetPicksByGameId(Guid gameId)
+    {
+        var picks = await _repo.GetPicksByGameId(gameId);
+        return await MapPickList(picks);
+    }
+
+    public async Task<List<LeaderboardEntryDto>> GetGroupLeaderboard(Guid groupId)
+    {
+        var members = await _groupMemberRepo.GetMembersByGroupId(groupId);
+        var leaderboard = new List<LeaderboardEntryDto>();
+
+        foreach (var member in members)
+        {
+            var picks = await _repo.GetPicksByUserAndGroup(member.UserId, groupId);
+            var correct = picks.Count(p => p.IsCorrect == true);
+
+            var user = await _userRepo.GetUserById(member.UserId);
+            leaderboard.Add(new LeaderboardEntryDto
+            {
+                UserId = member.UserId,
+                Username = user.Username,
+                CorrectPicks = correct,
+                TotalPicks = picks.Count
+            });
+        }
+
+        return leaderboard.OrderByDescending(e => e.CorrectPicks).ToList();
+    }
+
+    public async Task EvaluatePickOutcomes(Guid gameId, Guid actualWinnerId)
+    {
+        var picks = await _repo.GetPicksByGameId(gameId);
+
+        foreach (var pick in picks)
+        {
+            pick.IsCorrect = pick.PredictedWinnerId == actualWinnerId;
+            await _repo.UpdatePick(pick);
+        }
+    }
 
     private async Task<PickResponseDto> MapPickToResponseDto(Pick pick)
     {

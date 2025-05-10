@@ -13,13 +13,15 @@ namespace scoreoracle_backend.Services
         private readonly ITeamRepository _teamRepo;
         private readonly ISportRepository _sportRepo;
         private readonly ILeagueRepository _leagueRepo;
+        private readonly PickService _pickService;
 
-        public GameService(IGameRepository repo, ITeamRepository teamRepo, ISportRepository sportRepo, ILeagueRepository leagueRepo)
+        public GameService(IGameRepository repo, ITeamRepository teamRepo, ISportRepository sportRepo, ILeagueRepository leagueRepo, PickService pickService)
         {
             _repo = repo;
             _teamRepo = teamRepo;
             _sportRepo = sportRepo;
             _leagueRepo = leagueRepo;
+            _pickService = pickService;
         }
 
         public async Task<List<GameResponseDto>> GetAllGames()
@@ -122,12 +124,20 @@ namespace scoreoracle_backend.Services
             var game = await _repo.GetGameById(id);
             if (game == null) return null;
 
+            var previousWinner = game.WinnerTeamId;
+
             GameMapper.MapToUpdatedModel(game, dto);
 
             var updated = await _repo.UpdateGame(game);
-            
+
+            if (dto.WinnerTeamId.HasValue && dto.WinnerTeamId != previousWinner)
+            {
+                await _pickService.EvaluatePickOutcomes(updated.Id, dto.WinnerTeamId.Value);
+            }
+
             return await MapGameToResponseDto(updated);
         }
+
 
         public async Task<bool> DeleteGame(Guid id)
         {
